@@ -42,11 +42,10 @@ def gerar_vizinhos(estado):
 
 # ---------------------------
 # Hill Climbing (Steepest Ascent)
-# com controle de platô
 # ---------------------------
-def hill_climbing(max_iter=1000, max_laterais=50):
+def hill_climbing(estado_inicial, max_iter=1000, max_laterais=50):
     houve_otimo_local = False
-    estado = gerar_estado_aleatorio()
+    estado = estado_inicial.copy()
     h_atual = calcular_conflitos(estado)
 
     iteracoes = 0
@@ -70,7 +69,7 @@ def hill_climbing(max_iter=1000, max_laterais=50):
             h_atual = melhor_h
             mov_laterais = 0
 
-        # Platô (movimento lateral)
+        # Platô
         elif melhor_h == h_atual:
             estado = melhor_vizinho
             mov_laterais += 1
@@ -82,7 +81,6 @@ def hill_climbing(max_iter=1000, max_laterais=50):
 
         iteracoes += 1
 
-        # Critérios de parada
         if h_atual == 0:
             break
 
@@ -94,7 +92,7 @@ def hill_climbing(max_iter=1000, max_laterais=50):
 # ---------------------------
 # Random Restart
 # ---------------------------
-def hill_climbing_restart(max_iter=1000, max_restarts=50):
+def hill_climbing_restart(estado_inicial, max_iter=1000, max_restarts=50):
     melhor_global = None
     melhor_h_global = float('inf')
 
@@ -103,8 +101,10 @@ def hill_climbing_restart(max_iter=1000, max_restarts=50):
     total_laterais = 0
     houve_otimo_local = False
 
+    estado_atual = estado_inicial.copy()
+
     for _ in range(max_restarts):
-        estado, h, it, laterais, otimo_local = hill_climbing(max_iter)
+        estado, h, it, laterais, otimo_local = hill_climbing(estado_atual, max_iter)
 
         total_iteracoes += it
         total_laterais += laterais
@@ -119,6 +119,8 @@ def hill_climbing_restart(max_iter=1000, max_restarts=50):
 
         if melhor_h_global == 0:
             break
+
+        estado_atual = gerar_estado_aleatorio()
 
     return (
         melhor_global,
@@ -139,7 +141,8 @@ def executar_experimentos(num_execucoes=15):
         inicio = time.time()
 
         estado_inicial = gerar_estado_aleatorio()
-        estado_final, h_final, iteracoes, laterais, otimo_local, total_restarts = hill_climbing_restart()
+
+        estado_final, h_final, iteracoes, laterais, otimo_local, total_restarts = hill_climbing_restart(estado_inicial)
 
         fim = time.time()
 
@@ -186,19 +189,18 @@ def analisar_resultados(resultados):
     print("Média tempo:", statistics.mean(tempos))
     print("Desvio padrão tempo:", statistics.stdev(tempos))
     print("Taxa de sucesso:", sum(sucessos) / len(sucessos))
-    print("Valor médio de h:", statistics.mean(h_vals))
+    print("Valor médio final de h:", statistics.mean(h_vals))
+
 # ---------------------------
-# Melhores soluções
+# Top 5 soluções
 # ---------------------------
 def melhores_solucoes(resultados):
     ordenado = sorted(resultados, key=lambda x: x["h_final"])
     top5 = []
-
     vistos = set()
 
     for r in ordenado:
         estado = tuple(r["estado_final"])
-
         if estado not in vistos:
             top5.append(r)
             vistos.add(estado)
@@ -208,33 +210,46 @@ def melhores_solucoes(resultados):
 
     return top5
 
+# ---------------------------
+# Gráfico
+# ---------------------------
 def gerar_grafico():
     df = pd.read_csv("resultados.csv")
 
     plt.figure(figsize=(10,5))
     plt.bar(df["execucao"], df["iteracoes"])
-
     plt.xlabel("Execução")
     plt.ylabel("Número de Iterações")
     plt.title("Número de Iterações por Execução")
-    
     plt.savefig("grafico_iteracoes.png")
     plt.show()
     plt.close()
 
     print("\nGráfico salvo como grafico_iteracoes.png")
 
+# ---------------------------
+# Tabela
+# ---------------------------
 def gerar_tabela():
     df = pd.read_csv("resultados.csv")
 
-    df_resumo = df[["execucao", "iteracoes", "tempo", "h_final", "sucesso", "movimentos_laterais", "houve_otimo_local", "reinicios"]]
+    df_resumo = df[[
+        "execucao",
+        "iteracoes",
+        "tempo",
+        "h_final",
+        "sucesso",
+        "movimentos_laterais",
+        "houve_otimo_local",
+        "reinicios"
+    ]]
 
     df_resumo.to_csv("tabela_resultados.csv", index=False)
 
     print("\nTABELA DE RESULTADOS\n")
     print(df_resumo.to_string(index=False))
-
     print("\nTabela salva como tabela_resultados.csv")
+
 # ---------------------------
 # MAIN
 # ---------------------------
@@ -248,7 +263,6 @@ if __name__ == "__main__":
     top5 = melhores_solucoes(resultados)
 
     print("\nTOP 5 SOLUÇÕES")
-
     for i, s in enumerate(top5, 1):
         print(f"{i}: {s}")
 
