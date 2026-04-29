@@ -7,7 +7,7 @@ Hill Climbing aplicado ao problema das 8 rainhas
 ## Integrantes
 
 * Karen Souza Santos
-* Anda Aviz Pina
+* Amanda Aviz Pina
 
 ## Como executar
 
