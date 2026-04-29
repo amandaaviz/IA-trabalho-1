@@ -1,0 +1,262 @@
+{
+  "name": "Hill Climbing Correto",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hill-climbing",
+        "options": {}
+      },
+      "id": "ee7531e2-bb1f-420f-b2cc-29842e9cf8d0",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "c0d39bb1-12c7-4e04-b6bf-c73da088ce51"
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "=num_execucoes",
+              "value": "={{ $json.body.num_execucoes }}"
+            },
+            {
+              "name": "=max_iter",
+              "value": "={{ $json.body.max_iter }}"
+            }
+          ],
+          "string": [
+            {
+              "name": "=variante",
+              "value": "={{ $json.body.variante }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9d62ced6-6038-4ca2-90b7-471c15b8e35e",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = $json.num_execucoes;\n\nreturn Array.from({ length: n }, (_, i) => ({\n  json: {\n    execucao: i + 1,\n    max_iter: $json.max_iter,\n    variante: $json.variante\n  }\n}));"
+      },
+      "id": "dfc65608-bc8b-423f-ad92-0935dec0695e",
+      "name": "Gerar Execuções",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "ba05b811-a3cf-4941-9019-83dccc6d77fe",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        608,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items;"
+      },
+      "id": "d9cfeba7-a287-45d9-b963-244d1c515950",
+      "name": "Parse Resultado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "18Ec2w55KDzpowpaaRYhwvJQp_qrcDM85hz3Q0Kg_FLk",
+        "range": "resultado_hill!A:J",
+        "options": {}
+      },
+      "id": "d72ed957-f091-45fd-ada6-3a08f07ee026",
+      "name": "Salvar no Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vRXvkffUHdR5tq00",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/executar",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=max_iter",
+              "value": "={{ $json.max_iter }}"
+            },
+            {
+              "name": "=variante",
+              "value": "={{ $json.variante }}"
+            },
+            {
+              "name": "=num_execucoes",
+              "value": "={{ $json.execucao }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        816,
+        0
+      ],
+      "id": "94e68e55-6a5b-413a-8fac-80e3065289cb",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "content-type": "application/json",
+            "user-agent": "Mozilla/5.0 (Windows NT; Windows NT 10.0; pt-BR) WindowsPowerShell/5.1.26100.8115",
+            "host": "localhost:5678",
+            "content-length": "69",
+            "connection": "Keep-Alive"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "num_execucoes": 15,
+            "max_iter": 1000,
+            "variante": "restart"
+          },
+          "webhookUrl": "http://localhost:5678/webhook-test/hill-climbing",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Gerar Execuções",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar Execuções": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Resultado": {
+      "main": [
+        [
+          {
+            "node": "Salvar no Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Parse Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar no Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6a1d5f8b-c329-4d0c-8451-14bb201823f2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "74108ecfe7c6671d3e061d22795f550d69a9217875bc8b5fce688567110b9810"
+  },
+  "id": "F18RQuwxj9SzGkGI",
+  "tags": []
+}
