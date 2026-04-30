@@ -1,1 +1,0 @@
-[{"total_execucoes":1,"dados":[{"execucao":"eddf157b-e673-43b8-8010-89f8ce33fffc","estado_inicial":[0,3,7,3,7,2,3,5],"estado_final":[2,5,3,1,7,4,6,0],"h_final":0,"iteracoes":4,"tempo":0.002274036407470703,"sucesso":true,"movimentos_laterais":0,"houve_otimo_local":false,"reinicios":1}]}]
