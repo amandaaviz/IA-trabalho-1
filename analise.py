@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 pasta = "resultados"
-
+dados = []
 iteracoes = []
 tempos = []
 sucessos = []
@@ -20,7 +20,7 @@ for arquivo in os.listdir(pasta):
             # pega nível 0 (lista)
             for bloco in data:
                 # pega lista "dados"
-                for item in bloco["dados"]:
+                for item in bloco["resultados"]:
                     iteracoes.append(item["iteracoes"])
                     tempos.append(item["tempo"])
                     sucessos.append(item["sucesso"])
