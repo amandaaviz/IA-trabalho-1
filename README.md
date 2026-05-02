@@ -15,42 +15,33 @@ Hill Climbing aplicado ao problema das 8 rainhas
 
 pip install -r requirements.txt
 
-2. API:
+2. Instalar uvicorn:
 
-Iniciar a API
-uvicorn api:app --reload
+pip install uvicorn
 
+3. Iniciar API:
 
-3. N8N:
+python -m uvicorn api:app --reload
 
-3.1 Baixar n8n: 
+4. Baixar n8n: 
 
 npm install n8n -g
 
-3.2 Executar no terminal: 
+5. Executar no terminal: 
 
 n8n start
 
-3.3 Acessar: 
+6. Acessar: 
 
 O n8n ficará disponível em:
 http://localhost:5678
 
-3.4 Baixar o arquivo "Hill Climbing Correto.json" , importar no n8n e Executar
+7. Baixar o arquivo "Hill Climbing Correto.json" , importar no n8n e Executar
 
+8. Baixar o arquivo JSON gerado e colocar na pasta "resultados": 
 
-Enviar requisição com:
-{
-  "num_execucoes": 15,
-  "max_iter": 1000,
-  "variante": "restart"
-}
-
-
-4. Baixar os 15 JSONs gerados e Salvar todos na pasta: 
 resultados/
 
-
-5. Rodar análise:
+9. Rodar análise:
 
 python analise.py
