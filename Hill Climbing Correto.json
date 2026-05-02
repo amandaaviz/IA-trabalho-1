@@ -3,22 +3,6 @@
   "nodes": [
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "hill-climbing",
-        "options": {}
-      },
-      "id": "ee7531e2-bb1f-420f-b2cc-29842e9cf8d0",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [
-        0,
-        0
-      ],
-      "webhookId": "c0d39bb1-12c7-4e04-b6bf-c73da088ce51"
-    },
-    {
-      "parameters": {
         "values": {
           "number": [
             {
@@ -39,76 +23,43 @@
         },
         "options": {}
       },
-      "id": "9d62ced6-6038-4ca2-90b7-471c15b8e35e",
+      "id": "e966c21f-f42f-4ace-bdb2-423b3ea52b26",
       "name": "Edit Fields",
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        208,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const n = $json.num_execucoes;\n\nreturn Array.from({ length: n }, (_, i) => ({\n  json: {\n    execucao: i + 1,\n    max_iter: $json.max_iter,\n    variante: $json.variante\n  }\n}));"
-      },
-      "id": "dfc65608-bc8b-423f-ad92-0935dec0695e",
-      "name": "Gerar Execuções",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        400,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "batchSize": 1,
-        "options": {}
-      },
-      "id": "ba05b811-a3cf-4941-9019-83dccc6d77fe",
-      "name": "Loop Over Items",
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 1,
-      "position": [
-        608,
-        0
+        1232,
+        176
       ]
     },
     {
       "parameters": {
         "jsCode": "return items;"
       },
-      "id": "d9cfeba7-a287-45d9-b963-244d1c515950",
+      "id": "510f2891-a90d-4254-8421-5d99a46af00e",
       "name": "Parse Resultado",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1008,
-        0
+        1632,
+        208
       ]
     },
     {
       "parameters": {
-        "operation": "append",
-        "sheetId": "18Ec2w55KDzpowpaaRYhwvJQp_qrcDM85hz3Q0Kg_FLk",
-        "range": "resultado_hill!A:J",
+        "httpMethod": "POST",
+        "path": "hill-climbing",
         "options": {}
       },
-      "id": "d72ed957-f091-45fd-ada6-3a08f07ee026",
-      "name": "Salvar no Google Sheets",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 2,
+      "id": "de7709ad-b046-4fa9-a7e3-8d656751fc67",
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
       "position": [
-        1200,
-        0
+        1056,
+        144
       ],
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "vRXvkffUHdR5tq00",
-          "name": "Google Sheets account 4"
-        }
-      }
+      "webhookId": "c0d39bb1-12c7-4e04-b6bf-c73da088ce51"
     },
     {
       "parameters": {
@@ -118,16 +69,16 @@
         "bodyParameters": {
           "parameters": [
             {
-              "name": "=max_iter",
-              "value": "={{ $json.max_iter }}"
+              "name": "max_iter",
+              "value": 1000
             },
             {
-              "name": "=variante",
-              "value": "={{ $json.variante }}"
+              "name": "variante",
+              "value": "restart"
             },
             {
-              "name": "=num_execucoes",
-              "value": "={{ $json.execucao }}"
+              "name": "num_execucoes",
+              "value": 15
             }
           ]
         },
@@ -136,15 +87,29 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        816,
-        0
+        1440,
+        176
       ],
-      "id": "94e68e55-6a5b-413a-8fac-80e3065289cb",
-      "name": "HTTP Request"
+      "id": "c5a59d37-fe16-48d7-b3e7-e919f442105e",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1840,
+        272
+      ],
+      "id": "2a51078f-a0c9-46ee-8b34-2d75ad8195d2",
+      "name": "Convert to File"
     }
   ],
   "pinData": {
-    "Webhook": [
+    "Webhook1": [
       {
         "json": {
           "headers": {
@@ -168,7 +133,18 @@
     ]
   },
   "connections": {
-    "Webhook": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
       "main": [
         [
           {
@@ -179,51 +155,7 @@
         ]
       ]
     },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "Gerar Execuções",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gerar Execuções": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse Resultado": {
-      "main": [
-        [
-          {
-            "node": "Salvar no Google Sheets",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Loop Over Items": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
+    "HTTP Request1": {
       "main": [
         [
           {
@@ -234,11 +166,11 @@
         ]
       ]
     },
-    "Salvar no Google Sheets": {
+    "Parse Resultado": {
       "main": [
         [
           {
-            "node": "Loop Over Items",
+            "node": "Convert to File",
             "type": "main",
             "index": 0
           }
@@ -249,14 +181,12 @@
   "active": false,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
+    "binaryMode": "separate"
   },
-  "versionId": "6a1d5f8b-c329-4d0c-8451-14bb201823f2",
+  "versionId": "ba2920eb-f71c-4449-a1c5-c01b1cfccbaf",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "74108ecfe7c6671d3e061d22795f550d69a9217875bc8b5fce688567110b9810"
+    "instanceId": "6a6f3a0c441fd1bb43f8bf0304ea083ef347e1a282947ca1b2ef0f351be384a5"
   },
-  "id": "F18RQuwxj9SzGkGI",
+  "id": "qNi1KxyM0kRBOk4o",
   "tags": []
 }
